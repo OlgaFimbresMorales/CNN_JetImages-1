@@ -2,6 +2,7 @@ import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
 import time
+import os 
 
 #### Load Data
 
@@ -147,10 +148,12 @@ tf.summary.scalar('accuracy', accuracy)
 # Merge all summaries together
 merged_summary = tf.summary.merge_all()
 
-num_epochs = 10
+num_epochs = 1000
 batch_size = 128
 
 # ### TensorFlow Session
+
+curr_dir = os.path.abspath(os.path.curdir)  
 
 with tf.Session() as sess:
     # Initialize all variables
@@ -183,9 +186,8 @@ with tf.Session() as sess:
             
             # Calculate the accuracy on the batch of training data
             train_accuracy += sess.run(accuracy, feed_dict=feed_dict_train)
-            
-            
-        
+
+             
           
         if epoch%10==0:
             
@@ -198,9 +200,9 @@ with tf.Session() as sess:
             # Generate summary and validate the model on the entire validation set
             summ, vali_accuracy = sess.run([merged_summary, accuracy], feed_dict={x:data.validation.images, y_true:data.validation.labels})
             writer1.add_summary(summ, epoch)
-    
-            saver.save(sess,"epoch{:04}.ckpt".format((epoch)))
         
+
+            saver.save(sess,curr_dir+"epoch{:04}.ckpt".format((epoch)))
 
             end_time = time.time()
         
