@@ -158,8 +158,8 @@ with tf.Session() as sess:
     
     saver = tf.train.Saver()
     
-    for i, var in enumerate(saver._var_list):
-        print('Var {}:{}'.format(i,var))
+  #  for i, var in enumerate(saver._var_list):
+  #      print('Var {}:{}'.format(i,var))
     
     # Add the model graph to TensorBoard
     writer.add_graph(sess.graph)
