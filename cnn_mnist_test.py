@@ -2,7 +2,7 @@ import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
 import time
-import os 
+import os
 
 #### Load Data
 
@@ -25,7 +25,7 @@ y_true_cls = tf.argmax(y_true, dimension=1,name="y_true_cls")
 
 
 def new_conv_layer(input, num_input_channels, filter_size, num_filters, name):
-    
+
     with tf.variable_scope(name) as scope:
         # Shape of the filter-weights for the convolution
         shape = [filter_size, filter_size, num_input_channels, num_filters]
@@ -41,42 +41,42 @@ def new_conv_layer(input, num_input_channels, filter_size, num_filters, name):
 
         # Add the biases to the results of the convolution.
         layer += biases
-        
+
         return layer, weights
 
 # ### Function for creating a new Pooling Layer
 
 def new_pool_layer(input, name):
-    
+
     with tf.variable_scope(name) as scope:
         # TensorFlow operation for convolution
         layer = tf.nn.max_pool(value=input, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
-        
+
         return layer
 
 
 
 def new_relu_layer(input, name):
-    
+
     with tf.variable_scope(name) as scope:
         # TensorFlow operation for convolution
         layer = tf.nn.relu(input)
-        
+
         return layer
 
 # ### Function for creating a new Fully connected Layer
 
 def new_fc_layer(input, num_inputs, num_outputs, name):
-    
+
     with tf.variable_scope(name) as scope:
 
         # Create new weights and biases.
         weights = tf.Variable(tf.truncated_normal([num_inputs, num_outputs], stddev=0.05))
         biases = tf.Variable(tf.constant(0.05, shape=[num_outputs]))
-        
+
         # Multiply the input and weights, and then add the bias-values.
         layer = tf.matmul(input, weights) + biases
-        
+
         return layer
 
 # ### Create Convolutional Neural Network
@@ -153,7 +153,8 @@ batch_size = 128
 
 # ### TensorFlow Session
 
-curr_dir = os.path.abspath(os.path.curdir)  
+#curr_dir = os.path.abspath(os.path.curdir)
+curr_dir = '/workspace/models'
 
 config = tf.ConfigProto()
 config.gpu_options.allow_growth = True
@@ -161,58 +162,55 @@ config.gpu_options.allow_growth = True
 with tf.Session(config=config) as sess:
     # Initialize all variables
     sess.run(tf.global_variables_initializer())
-    
+
     saver = tf.train.Saver()
-    
+
   #  for i, var in enumerate(saver._var_list):
   #      print('Var {}:{}'.format(i,var))
-    
+
     # Add the model graph to TensorBoard
     writer.add_graph(sess.graph)
-    
+
     # Loop over number of epochs
     for epoch in range(num_epochs):
         
         start_time = time.time()
         train_accuracy = 0
-        
+
         for batch in range(0, int(len(data.train.labels)/batch_size)):
-            
+
             # Get a batch of images and labels
             x_batch, y_true_batch = data.train.next_batch(batch_size)
-            
+
             # Put the batch into a dict with the proper names for placeholder variables
             feed_dict_train = {x: x_batch, y_true: y_true_batch}
-            
+
             # Run the optimizer using this batch of training data.
             sess.run(optimizer, feed_dict=feed_dict_train)
-            
+
             # Calculate the accuracy on the batch of training data
             train_accuracy += sess.run(accuracy, feed_dict=feed_dict_train)
 
-             
-          
+
+
         if epoch%10==0:
-            
+
             # Generate summary with the current batch of data and write to file
             summ = sess.run(merged_summary, feed_dict=feed_dict_train)
             writer.add_summary(summ, epoch*int(len(data.train.labels)/batch_size) + batch)
-            
+
             train_accuracy /= int(len(data.train.labels)/batch_size)
-        
+
             # Generate summary and validate the model on the entire validation set
             summ, vali_accuracy = sess.run([merged_summary, accuracy], feed_dict={x:data.validation.images, y_true:data.validation.labels})
             writer1.add_summary(summ, epoch)
-        
+
 
             saver.save(sess,curr_dir+"epoch{:04}.ckpt".format((epoch)))
 
             end_time = time.time()
-        
+
             print("Epoch "+str(epoch+1)+" completed : Time usage "+str(int(end_time-start_time))+" seconds")
             print("\tAccuracy:")
             print ("\t- Training Accuracy:\t{}".format(train_accuracy))
             print ("\t- Validation Accuracy:\t{}".format(vali_accuracy))
-    
-
-
