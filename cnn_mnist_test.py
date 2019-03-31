@@ -154,7 +154,7 @@ batch_size = 128
 # ### TensorFlow Session
 
 #curr_dir = os.path.abspath(os.path.curdir)
-curr_dir = '/workspace/models'
+curr_dir = '/LUSTRE/home/acastaneda/models'
 
 config = tf.ConfigProto()
 config.gpu_options.allow_growth = True
@@ -173,7 +173,7 @@ with tf.Session(config=config) as sess:
 
     # Loop over number of epochs
     for epoch in range(num_epochs):
-        
+
         start_time = time.time()
         train_accuracy = 0
 
