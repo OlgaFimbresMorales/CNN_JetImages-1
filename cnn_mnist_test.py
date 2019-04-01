@@ -154,7 +154,7 @@ batch_size = 128
 # ### TensorFlow Session
 
 #curr_dir = os.path.abspath(os.path.curdir)
-curr_dir = '/LUSTRE/home/acastaneda/models/'
+curr_dir = '/workspace/models/'
 
 config = tf.ConfigProto()
 config.gpu_options.allow_growth = True
